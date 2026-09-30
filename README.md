@@ -1,42 +1,220 @@
 # Hibernate Assignment 1
 
-A simple Java Hibernate project demonstrating how to **insert new data into a MySQL database and read the stored data using Hibernate**.
+A Java Hibernate project demonstrating database operations and entity relationships using **Hibernate ORM and MySQL**.
 
 ## Technologies Used
 
-- Java
-- Hibernate ORM
-- MySQL
-- Maven
-- Eclipse IDE
+* Java
+* Hibernate ORM
+* MySQL
+* Maven
+* Eclipse IDE
+* Jakarta Persistence (JPA)
 
 ## Project Description
 
-This project demonstrates basic database operations using Hibernate.
+This project demonstrates how to work with MySQL databases using Hibernate.
 
-The project performs two main operations:
+The project covers:
 
-1. **Create** – Inserts new data into the MySQL database using Hibernate.
-2. **Read** – Retrieves the stored data from the database using Hibernate.
+* Creating and reading data using Hibernate
+* Updating existing records
+* Deleting records
+* Mapping Java classes to database tables
+* Establishing relationships between entities
 
+The project contains three main entities:
 
-## Operations
+* `Employee`
+* `Department`
+* `Project`
 
-### 1. Insert Data
+---
 
-The `create` program creates a new Java object and saves it into the MySQL database using Hibernate.
+## Entities
 
-![Create Data](images/create.png)
+### 1. Employee
 
-### 2. MySQL Database Output
+The `Employee` entity represents an employee in the organization.
 
-The inserted data can be verified in the MySQL database.
+It contains the following information:
 
-![MySQL Output](images/mysqloutput.png)
+* `employeeId` – Employee ID
+* `name` – Employee name
+* `salary` – Employee salary
+* `department` – Department associated with the employee
 
-### 3. Read Data
+An Employee has a **Many-to-One** relationship with Department.
 
-The `read` program retrieves the stored data from the MySQL database using Hibernate and displays it in the console.
+Multiple employees can belong to the same department.
 
-![Read Data](images/read.png)
+---
 
+### 2. Department
+
+The `Department` entity represents a department in the organization.
+
+It contains:
+
+* `departmentId` – Automatically generated department ID
+* `departmentName` – Name of the department
+* `employees` – List of employees belonging to the department
+
+The department name is configured as **unique**, so duplicate department names are not allowed.
+
+A Department has a **One-to-Many** relationship with Employee.
+
+---
+
+### 3. Project
+
+The `Project` entity represents a project.
+
+It contains:
+
+* `projectId` – Automatically generated project ID
+* `projectName` – Name of the project
+* `projectStartDate` – Project start date
+* `projectEndDate` – Project end date
+
+The project ID is automatically generated using:
+
+```java
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+```
+
+---
+
+## CRUD Operations
+
+### Create
+
+New records can be inserted into the database using Hibernate's `persist()` method.
+
+Examples include:
+
+* Creating a Department
+* Creating a Project
+* Creating other entity records
+
+### Read
+
+Stored records can be retrieved from the database using Hibernate queries.
+
+For example:
+
+```java
+List<Project> projects = session.createQuery("from Project").getResultList();
+```
+
+The retrieved objects are then displayed using their `toString()` methods.
+
+### Update
+
+Existing records can be retrieved using their ID and modified using setter methods.
+
+For example:
+
+```java
+Project project = session.get(Project.class, projectId);
+project.setProjectName("Java Web Application");
+```
+
+Hibernate automatically updates the managed entity when the transaction is committed.
+
+### Delete
+
+Existing records can be removed using Hibernate's `remove()` method.
+
+For example:
+
+```java
+Project project = session.get(Project.class, projectId);
+session.remove(project);
+```
+
+---
+
+## Employee-Department Relationship
+
+The project demonstrates a **Many-to-One / One-to-Many** relationship between Employee and Department.
+
+```text
+Department
+    |
+    | One-to-Many
+    |
+    +---- Employee
+    +---- Employee
+    +---- Employee
+```
+
+Multiple employees can belong to one department.
+
+The relationship is mapped using JPA annotations such as:
+
+```java
+@ManyToOne
+```
+
+and
+
+```java
+@OneToMany
+```
+
+---
+
+## Project Structure
+
+```text
+hibernate_assign_1
+│
+├── src
+│   └── main
+│       ├── java
+│       │   ├── crud
+│       │   │   ├── CreateDepartment.java
+│       │   │   ├── ReadDepartment.java
+│       │   │   ├── UpdateDepartment.java
+│       │   │   ├── DeleteDepartment.java
+│       │   │   ├── CreateProject.java
+│       │   │   ├── ReadProject.java
+│       │   │   ├── UpdateProject.java
+│       │   │   └── DeleteProject.java
+│       │   │
+│       │   └── org
+│       │       └── arghya
+│       │           └── hibernate_assign_1
+│       │               └── entity
+│       │                   ├── Employee.java
+│       │                   ├── Department.java
+│       │                   └── Project.java
+│       │
+│       └── resources
+│
+├── pom.xml
+└── README.md
+```
+
+## Database
+
+The project uses **MySQL** as the database.
+
+Hibernate is used to map the Java entities to their corresponding database tables and perform database operations.
+
+Main tables include:
+
+```text
+employee
+department
+project
+```
+
+The `Department` and `Project` IDs are automatically generated by the database.
+
+## Hibernate Configuration
+
+Hibernate is configured to connect to the MySQL database using the project's Hibernate configuration.
+
+The application uses Hibernate's `Session` and `SessionFactory` to perform database operations.
